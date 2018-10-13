@@ -16,11 +16,25 @@ import { Switch, Route } from 'react-router-dom';
 
 import HomePage from 'containers/HomePage/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
+import AdminPage from 'containers/Admin';
+import CatalogPage from 'containers/Admin/Catalog';
+
+const adminRoutes = [
+  {
+    path: '/admin/catalog',
+    component: CatalogPage,
+    text: 'Каталог', // todo: i8n
+  },
+];
 
 export default function App() {
   return (
     <div>
       <Switch>
+        <Route
+          path="/admin"
+          component={() => AdminPage({ routes: adminRoutes })}
+        />
         <Route exact path="/" component={HomePage} />
         <Route component={NotFoundPage} />
       </Switch>
