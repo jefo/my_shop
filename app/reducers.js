@@ -2,9 +2,10 @@
  * Combine all reducers in this file and export the combined reducers.
  */
 
-import { combineReducers } from 'redux-immutable';
-import { fromJS } from 'immutable';
 import { LOCATION_CHANGE } from 'react-router-redux';
+import { combineReducers } from 'redux';
+import { reduxForm } from 'redux-form';
+import { merge } from 'lodash';
 
 import languageProviderReducer from 'containers/LanguageProvider/reducer';
 
@@ -15,11 +16,11 @@ import languageProviderReducer from 'containers/LanguageProvider/reducer';
  * The change is necessitated by moving to react-router-redux@4
  *
  */
-
+//
 // Initial routing state
-const routeInitialState = fromJS({
-  location: null,
-});
+const routeInitialState = {
+  location: {},
+};
 
 /**
  * Merge route into the global application state
@@ -28,7 +29,7 @@ export function routeReducer(state = routeInitialState, action) {
   switch (action.type) {
     /* istanbul ignore next */
     case LOCATION_CHANGE:
-      return state.merge({
+      return merge(state, {
         location: action.payload,
       });
     default:
@@ -39,10 +40,11 @@ export function routeReducer(state = routeInitialState, action) {
 /**
  * Creates the main reducer with the dynamically injected ones
  */
-export default function createReducer(injectedReducers) {
-  return combineReducers({
+
+export default injectedReducers =>
+  combineReducers({
+    form: reduxForm,
     route: routeReducer,
     language: languageProviderReducer,
     ...injectedReducers,
   });
-}

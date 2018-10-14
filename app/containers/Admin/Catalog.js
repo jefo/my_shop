@@ -1,10 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Table from 'components/Table';
+import { compose, defaultProps } from 'recompose';
+import { Route, Switch } from 'react-router-dom';
+import EditableTable from 'components/EditableTable';
+import { create as createForm } from 'components/EditableForm';
 
-const Catalog = ({ classes }) => {
+const enhance = compose(
+  defaultProps({
+    fields: [
+      { name: 'id', label: 'ID', type: 'text' },
+      { name: 'name', label: 'Наименование', type: 'text' },
+    ],
+  }),
+);
+
+const ProductForm = createForm('product');
+
+const Catalog = ({ fields }) => {
   const rows = [
     {
       id: 1,
@@ -13,14 +25,23 @@ const Catalog = ({ classes }) => {
     },
   ];
   return (
-    <Paper className={classes.root}>
-      <Table rows={rows} page={0} rowsPerPage={20} />
-    </Paper>
+    <Switch>
+      <Route
+        exact
+        path="/admin/catalog"
+        render={() => <EditableTable rows={rows} />}
+      />
+      <Route
+        exact
+        path="/admin/catalog/add"
+        render={() => <ProductForm fields={fields} />}
+      />
+    </Switch>
   );
 };
 
 Catalog.propTypes = {
-  classes: PropTypes.object.isRequired,
+  fields: PropTypes.array.isRequired,
 };
 
-export default withStyles({})(Catalog);
+export default enhance(Catalog);
