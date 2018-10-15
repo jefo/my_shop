@@ -1,22 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, defaultProps } from 'recompose';
+import { compose, defaultProps, mapProps } from 'recompose';
 import { Route, Switch } from 'react-router-dom';
 import EditableTable from 'components/EditableTable';
-import { create as createForm } from 'components/EditableForm';
+import EditableForm from 'components/EditableForm';
 
 const enhance = compose(
   defaultProps({
-    fields: [
+    products: [
+      { id: 1, name: 'Изделие 1' },
+      { id: 2, name: 'Изделие 2' },
+      { id: 3, name: 'Изделие 3' },
+    ],
+    productProps: [
       { name: 'id', label: 'ID', type: 'text' },
       { name: 'name', label: 'Наименование', type: 'text' },
     ],
   }),
+  mapProps(props => {
+    const { products, productProps } = props;
+    const rows = products.map((p, key) => ({}));
+  }),
 );
 
-const ProductForm = createForm('product');
-
-const Catalog = ({ fields }) => {
+const Catalog = ({ productProps }) => {
   const rows = [
     {
       id: 1,
@@ -24,6 +31,9 @@ const Catalog = ({ fields }) => {
       categories: 'Категория 1, категория 2',
     },
   ];
+  const formProps = {
+    fields: productProps,
+  };
   return (
     <Switch>
       <Route
@@ -34,14 +44,14 @@ const Catalog = ({ fields }) => {
       <Route
         exact
         path="/admin/catalog/add"
-        render={() => <ProductForm fields={fields} />}
+        render={() => <EditableForm name="product" {...formProps} />}
       />
     </Switch>
   );
 };
 
 Catalog.propTypes = {
-  fields: PropTypes.array.isRequired,
+  productProps: PropTypes.array.isRequired,
 };
 
 export default enhance(Catalog);

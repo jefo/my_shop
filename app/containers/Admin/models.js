@@ -2,11 +2,16 @@ import { createActions } from 'redux-actions';
 import { combineReducers } from 'redux';
 import { merge, get, omit } from 'lodash';
 
-const { addProp, removeProp, updateProp } = createActions({
+export const Actions = createActions({
   ADD_PROP: prop => ({ prop }),
   REMOVE_PROP: prop => ({ prop }),
   UPDATE_PROP: propName => ({ propName }),
+  ADD_MODEL: name => ({ name }),
+  ADD_MODEL_SUCCESS: model => ({ model }),
+  ADD_MODEL_FAIL: error => ({ error }),
 });
+
+const { addProp, removeProp, updateProp, addModel } = Actions;
 
 export const entitiesState = {};
 
@@ -31,6 +36,9 @@ const propsReducer = entityName => (state = entitiesState, action) => {
       break;
     case [removeProp]:
       newState = omit(state, payload.propName);
+      break;
+    case [addModel]:
+      newState = { ...state, [payload.model.id]: payload.model };
       break;
     default:
       break;

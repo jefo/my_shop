@@ -1,0 +1,16 @@
+type Prop {
+  id: ID!
+  name: String
+  type: String
+}
+
+type Model {
+  id: ID!
+  name: String
+  props: [Prop]
+}
+
+type Mutation {
+  updateModel(modelID: ID!, name: String!, type: String!, props: [Prop]!): Model
+  updateProp(id: ID!, name: String!, type: String!): Prop
+}

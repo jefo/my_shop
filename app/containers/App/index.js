@@ -18,12 +18,18 @@ import HomePage from 'containers/HomePage/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import AdminPage from 'containers/Admin';
 import CatalogPage from 'containers/Admin/Catalog';
+import ModelEditor from 'containers/Admin/ModelEditor';
 
 const adminRoutes = [
   {
     path: '/admin/catalog',
     component: CatalogPage,
     text: 'Каталог', // todo: i8n
+  },
+  {
+    path: '/admin/forms',
+    component: ModelEditor,
+    text: 'Редактор форм',
   },
 ];
 

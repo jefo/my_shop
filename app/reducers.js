@@ -4,7 +4,6 @@
 
 import { LOCATION_CHANGE } from 'react-router-redux';
 import { combineReducers } from 'redux';
-import { reduxForm } from 'redux-form';
 import { merge } from 'lodash';
 
 import languageProviderReducer from 'containers/LanguageProvider/reducer';
@@ -43,7 +42,6 @@ export function routeReducer(state = routeInitialState, action) {
 
 export default injectedReducers =>
   combineReducers({
-    form: reduxForm,
     route: routeReducer,
     language: languageProviderReducer,
     ...injectedReducers,
