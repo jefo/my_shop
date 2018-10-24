@@ -6,7 +6,7 @@
   "scripts": {
     "migrate": "node-pg-migrate",
     "migrate-up": "cross-env DATABASE_URL=postgres://postgres:tsgddytd@localhost:5432/my_shop yarn migrate up",
-    "start": "node index.js"
+    "start": "cross-env NODE_ENV=development node index.js"
   },
   "dependencies": {
     "apollo-server-express": "^2.1.0",

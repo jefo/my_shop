@@ -2,6 +2,8 @@ const express = require('express');
 const migrate = require('node-pg-migrate');
 const { postgraphile } = require('postgraphile');
 
+const app = express();
+
 app.use(
   postgraphile(
     process.env.DATABASE_URL ||
@@ -14,8 +16,6 @@ app.use(
     },
   ),
 );
-
-const app = express();
 
 app.listen(3000, () => {
   console.log('Server started at localhost:3000');
