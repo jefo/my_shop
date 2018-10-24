@@ -3,12 +3,24 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "migrate": "node-pg-migrate",
+    "migrate-up": "cross-env DATABASE_URL=postgres://postgres:tsgddytd@localhost:5432/my_shop yarn migrate up",
+    "start": "node index.js"
+  },
   "dependencies": {
     "apollo-server-express": "^2.1.0",
     "express": "^4.16.4",
     "graphql": "^14.0.2",
+    "node-pg-migrate": "^3.11.0",
     "pg": "^7.5.0",
     "pg-hstore": "^2.3.2",
+    "postgraphile": "^4.0.1",
     "sequelize": "^4.41.0"
+  },
+  "repository": "https://github.com/jefo/my_shop",
+  "author": "j4",
+  "devDependencies": {
+    "cross-env": "^5.2.0"
   }
 }
