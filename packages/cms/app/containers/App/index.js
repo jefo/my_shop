@@ -1,30 +1,19 @@
-/**
- *
- * App.js
- *
- * This component is the skeleton around the actual pages, and should only
- * contain code that should be seen on all pages. (e.g. navigation bar)
- *
- * NOTE: while this component should technically be a stateless functional
- * component (SFC), hot reloading does not currently support SFCs. If hot
- * reloading is not a necessity for you then you can refactor it and remove
- * the linting exception.
- */
-
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
-
-import HomePage from 'containers/HomePage/Loadable';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import teal from '@material-ui/core/colors/teal';
+import red from '@material-ui/core/colors/red';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
-import AdminPage from 'containers/Admin';
-import CatalogPage from 'containers/Admin/Catalog';
-import ModelEditor from 'containers/Admin/ModelEditor';
+import ProductsPage from 'containers/Products';
+import ModelEditor from 'containers/ModelEditor';
+import Layout from 'components/Layout';
 
-const adminRoutes = [
+// in near future routes will load from server
+const routes = [
   {
-    path: '/admin/catalog',
-    component: CatalogPage,
-    text: 'Каталог', // todo: i8n
+    path: '/admin/products',
+    component: ProductsPage,
+    text: 'Товары', // todo: i8n
   },
   {
     path: '/admin/forms',
@@ -33,17 +22,30 @@ const adminRoutes = [
   },
 ];
 
-export default function App() {
-  return (
-    <div>
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#3949ab',
+    },
+    secondary: red,
+  },
+});
+
+export default () => (
+  <MuiThemeProvider theme={theme}>
+    <Layout
+      navItems={routes.map(r => ({
+        href: r.path,
+        text: r.text,
+        component: r.component,
+      }))}
+    >
       <Switch>
-        <Route
-          path="/admin"
-          component={() => AdminPage({ routes: adminRoutes })}
-        />
-        <Route exact path="/" component={HomePage} />
+        {routes.map(r => (
+          <Route key={r.path} path={r.path} render={r.component} />
+        ))}
         <Route component={NotFoundPage} />
       </Switch>
-    </div>
-  );
-}
+    </Layout>
+  </MuiThemeProvider>
+);

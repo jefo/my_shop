@@ -1,7 +1,12 @@
 exports.shorthands = undefined;
 
 const commonFields = pgm => ({
-  createdAt: {
+  created_at: {
+    type: 'timestamp',
+    notNull: true,
+    default: pgm.func('current_timestamp'),
+  },
+  updated_at: {
     type: 'timestamp',
     notNull: true,
     default: pgm.func('current_timestamp'),
@@ -9,14 +14,14 @@ const commonFields = pgm => ({
 });
 
 exports.up = pgm => {
-  pgm.createTable('products', {
+  pgm.createTable('my_products', {
     id: 'id',
     title: { type: 'varchar(1000)', notNull: true },
     price: { type: 'money' },
     description: { type: 'text' },
     ...commonFields(pgm),
   });
-  pgm.createTable('bills', {
+  pgm.createTable('my_bills', {
     id: 'id',
     name: { type: 'varchar(1000)', notNull: true },
     street_address: { type: 'varchar(1000)', notNull: true },
@@ -27,20 +32,20 @@ exports.up = pgm => {
     zip_code: { type: 'varchar(10)' },
     phone: { type: 'varchar(20)' },
     email: { type: 'varchar(100)', notNull: true },
-    ...commonFields,
+    ...commonFields(pgm),
   });
   pgm.createTable(
-    'products_bills',
+    'my_rel_products_bills',
     {
       bill_id: {
         type: 'int',
-        references: 'bills',
+        references: 'my_bills',
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE ',
       },
       product_id: {
         type: 'int',
-        references: 'products',
+        references: 'my_products',
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE ',
       },
@@ -51,22 +56,31 @@ exports.up = pgm => {
       },
     },
   );
-  pgm.createTable('shipping', {
+  pgm.createTable('my_shipping', {
     id: 'id',
     title: { type: 'varchar(100)', notNull: true },
     description: { type: 'varchar(100)' },
     price: { type: 'money' },
+    ...commonFields(pgm),
   });
-  pgm.createType('card', ['Visa', 'Mastercard', 'American Express']);
-  pgm.createTable('payments', {
+  pgm.createType('my_card', ['Visa', 'Mastercard', 'American Express']);
+  pgm.createTable('my_payments', {
     id: 'id',
-    card_type: { type: 'card' },
+    card_type: { type: 'my_card' },
     name_of_card: { type: 'varchar(100)' },
     card_number: { type: 'varchar(19)' },
     cvs: { type: 'varchar(3)' },
     expiration_month: { type: 'varchar(50)' },
     expiration_year: { type: 'varchar(4)' },
+    ...commonFields(pgm),
   });
 };
 
-exports.down = pgm => {};
+exports.down = pgm => {
+  pgm.dropTable('my_products', { cascade: true });
+  pgm.dropTable('my_bills', { cascade: true });
+  pgm.dropTable('my_products_bills', { cascade: true });
+  pgm.dropTable('my_shipping', { cascade: true });
+  pgm.dropTable('my_payments', { cascade: true });
+  pgm.dropType('my_card');
+};

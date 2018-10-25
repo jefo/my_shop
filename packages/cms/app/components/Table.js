@@ -24,7 +24,11 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { withStyles } from '@material-ui/core/styles';
 
 const enhance = compose(
-  withStyles({}),
+  withStyles(theme => ({
+    tableWrapper: {
+      backgroundColor: theme.palette.common.white,
+    },
+  })),
   defaultProps({
     numSelected: 0,
     selectedRows: [],

@@ -40,7 +40,23 @@ const enhance = compose(
   }),
 );
 
-FormField.propTypes = {
+export const Field = props => {
+  let FieldComponent;
+  switch (props.component) {
+    case 'checkbox':
+      FieldComponent = Checkbox;
+      break;
+    case 'select':
+      FieldComponent = Select;
+      break;
+    default:
+      FieldComponent = TextField;
+      break;
+  }
+  return <FieldComponent {...props} />;
+};
+
+Field.propTypes = {
   component: PropTypes.string.isRequired,
 };
 
@@ -87,13 +103,13 @@ const EditableForm = ({
     <div>
       {adding && <div />}
       <Form name={name} onSubmit={onSubmit}>
-        {fields.map(f => <FormField key={f.name} {...f} />)}
+        {fields.map(f => <Field key={f.name} {...f} />)}
       </Form>
     </div>
   </div>
 );
 
-EditableForm.Field = FormField;
+EditableForm.Field = Field;
 
 EditableForm.propTypes = {
   name: PropTypes.string.isRequired,

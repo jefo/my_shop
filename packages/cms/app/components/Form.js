@@ -35,22 +35,6 @@ export const withForm = () => BaseComponent => props =>
 
 const enhance = compose(withForm());
 
-export const Field = props => {
-  let FieldComponent;
-  switch (props.component) {
-    case 'checkbox':
-      FieldComponent = Checkbox;
-      break;
-    case 'select':
-      FieldComponent = Select;
-      break;
-    default:
-      FieldComponent = TextField;
-      break;
-  }
-  return <FieldComponent {...props} />;
-};
-
 const Form = (
   { handleSubmit, handleChange, children }, // eslint-disable-line
 ) => (
@@ -58,8 +42,6 @@ const Form = (
     {props => children({ ...props, onChange: handleChange })}
   </form>
 );
-
-Form.Field = Field;
 
 Form.propTypes = {
   handleChange: PropTypes.func.isRequired,

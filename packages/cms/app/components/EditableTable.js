@@ -24,7 +24,7 @@ const EditableTable = ({ classes, rows }) => (
         variant="contained"
         color="primary"
         component={Link}
-        to="/admin/catalog/add"
+        to="/admin/products/add"
       >
         <AddIcon />
         Добавить товар
