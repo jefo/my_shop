@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { get } from 'lodash';
 import { compose, defaultProps, mapProps } from 'recompose';
-import { Route, Switch } from 'react-router-dom';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 import { withStyles } from '@material-ui/core/styles';
 import AddCircle from '@material-ui/icons/AddCircle';
 import TextField from '@material-ui/core/TextField';
@@ -36,7 +38,30 @@ const enhance = compose(
   }),
 );
 
-const Products = ({ classes, productProps }) => {
+const ProductsTable = graphql(
+  gql`
+    {
+      allMyProducts {
+        nodes {
+          id
+          title
+          price
+          description
+          createdAt
+          updatedAt
+        }
+      }
+    }
+  `,
+  {
+    props: props => ({
+      ...props,
+      rows: get(props, 'data.allMyProducts.nodes', []),
+    }),
+  },
+)(Table);
+
+const Products = ({ classes, productProps, items }) => {
   const rows = [
     {
       id: 1,
@@ -47,15 +72,25 @@ const Products = ({ classes, productProps }) => {
   return (
     <div className={classes.root}>
       <div className={classes.controls}>
-        <Button variant="contained" color="primary" className={classes.button}>
+        <Button
+          size="small"
+          variant="contained"
+          color="primary"
+          className={classes.button}
+          to="products/new"
+        >
           <AddCircle />
           &nbsp;Добавить товар
         </Button>
       </div>
       <Divider />
       <SearchField />
-      <Table rows={rows} rowsPerPage={25} />
-      {/* <Drawer></Drawer> */}
+      <ProductsTable rowsPerPage={25} />
+      {/* <Drawer>
+        <Form>
+
+        </Form>
+      </Drawer> */}
     </div>
   );
 };

@@ -1,8 +1,12 @@
 const express = require('express');
+const path = require('path');
 const migrate = require('node-pg-migrate');
 const { postgraphile } = require('postgraphile');
+const cors = require('cors');
 
 const app = express();
+
+app.use(cors());
 
 app.use(
   postgraphile(
@@ -12,6 +16,8 @@ app.use(
     {
       options: {
         watchPg: true,
+        classicIds: true,
+        enableCors: true,
       },
     },
   ),

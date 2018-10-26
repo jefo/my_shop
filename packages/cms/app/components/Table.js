@@ -106,9 +106,9 @@ export const MyTable = ({
                   <Checkbox checked={selected} />
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  {row.name}
+                  {row.id}
                 </TableCell>
-                <TableCell numeric>{row.calories}</TableCell>
+                <TableCell>{row.title}</TableCell>
               </TableRow>
             );
           })}

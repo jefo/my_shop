@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { compose, lifesycle } from 'recompose';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import teal from '@material-ui/core/colors/teal';
 import red from '@material-ui/core/colors/red';
@@ -29,23 +29,28 @@ const theme = createMuiTheme({
     },
     secondary: red,
   },
+  overrides: {
+    MuiNotchedOutline: {
+      root: {
+        borderRadius: 0,
+      },
+    },
+    MuiOutlinedInput: {
+      input: {
+        padding: '12px',
+        borderRadius: 0,
+      },
+    },
+    MuiInputLabel: {
+      outlined: {
+        transform: 'translate(14px, 14px) scale(1)',
+      },
+    },
+  },
 });
 
-export default () => (
+export default ({ children }) => (
   <MuiThemeProvider theme={theme}>
-    <Layout
-      navItems={routes.map(r => ({
-        href: r.path,
-        text: r.text,
-        component: r.component,
-      }))}
-    >
-      <Switch>
-        {routes.map(r => (
-          <Route key={r.path} path={r.path} render={r.component} />
-        ))}
-        <Route component={NotFoundPage} />
-      </Switch>
-    </Layout>
+    <Layout navItems={[]}>{children}</Layout>
   </MuiThemeProvider>
 );

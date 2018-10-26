@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Route, Switch } from 'react-router-dom';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -10,8 +9,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { withStyles } from '@material-ui/core/styles';
 import indigo from '@material-ui/core/colors/indigo';
-
-console.log(indigo);
 
 const styles = theme => ({
   root: {
@@ -39,7 +36,7 @@ const styles = theme => ({
   },
 });
 
-const Layout = ({ classes, navItems }) => (
+const Layout = ({ classes, navItems, children }) => (
   <div className={classes.root}>
     <Drawer
       variant="permanent"
@@ -48,7 +45,7 @@ const Layout = ({ classes, navItems }) => (
       }}
     >
       <List component="nav">
-        {navItems.map(item => (
+        {/* {navItems.map(item => (
           <ListItem key={item.href} button component="a" href={item.href}>
             <ListItemText
               className={classes.navItemText}
@@ -56,16 +53,12 @@ const Layout = ({ classes, navItems }) => (
               primary={item.text}
             />
           </ListItem>
-        ))}
+        ))} */}
       </List>
     </Drawer>
     <main className={classes.content}>
       <div className={classes.toolbar} />
-      <Switch>
-        {navItems.map(item => (
-          <Route key={item.href} path={item.href} component={item.component} />
-        ))}
-      </Switch>
+      {children}
     </main>
   </div>
 );

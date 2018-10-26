@@ -12,12 +12,10 @@ import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { ConnectedRouter } from 'react-router-redux';
-import createHistory from 'history/createBrowserHistory';
-import 'sanitize.css/sanitize.css';
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider } from 'react-apollo';
 
-// Import root app
-import App from 'containers/App';
+import 'sanitize.css/sanitize.css';
 
 // Import Language Provider
 import LanguageProvider from 'containers/LanguageProvider';
@@ -33,22 +31,28 @@ import configureStore from './configureStore';
 // Import i18n messages
 import { translationMessages } from './i18n';
 
+import Router from './router';
+// import enviroment from './enviroment';
+
 // Import CSS reset and Global Styles
 import './global-styles';
 
 // Create redux store with history
 const initialState = {};
-const history = createHistory();
 const store = configureStore(initialState, history);
 const MOUNT_NODE = document.getElementById('app');
+
+const client = new ApolloClient({
+  uri: 'http://localhost:3001/graphql',
+});
 
 const render = messages => {
   ReactDOM.render(
     <Provider store={store}>
       <LanguageProvider messages={messages}>
-        <ConnectedRouter history={history}>
-          <App />
-        </ConnectedRouter>
+        <ApolloProvider client={client}>
+          <Router />
+        </ApolloProvider>
       </LanguageProvider>
     </Provider>,
     MOUNT_NODE,
