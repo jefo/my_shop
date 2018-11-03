@@ -16,7 +16,6 @@ app.use(
     {
       options: {
         watchPg: true,
-        classicIds: true,
         enableCors: true,
       },
     },

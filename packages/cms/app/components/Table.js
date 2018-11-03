@@ -35,30 +35,77 @@ const enhance = compose(
   }),
   mapProps(props => ({ ...props, numSelected: props.selectedRows.length })),
   withState('page', 'setPage', 0),
-  withState('selectedRows', 'setRows', []),
+  withState('selectedRows', 'setSelectedRows', []),
   withHandlers({
     isSelected: ({ selectedRows }) => id => selectedRows.includes(id),
+    isSelectedAll: ({ selectedRows, rows }) => () =>
+      selectedRows.length === rows.length,
   }),
   withHandlers({
-    toggleSelect: ({ selectedRows, isSelected }) => (e, id) => {
+    toggleSelect: ({ selectedRows, isSelected, setSelectedRows }) => (
+      e,
+      id,
+    ) => {
       const selected = isSelected(id);
-      return selected
-        ? remove(selectedRows, r => r === id)
-        : selectedRows.push(id);
+      const rows = selected
+        ? selectedRows.filter(r => r !== id)
+        : [...selectedRows, id];
+      setSelectedRows(rows);
     },
     toggleSelectAll: props => () => {
-      const { selectedRows, rows, isSelected } = props;
-      if (selectedRows.length === rows.length) {
-        selectedRows.length = 0;
-      } else {
+      const { selectedRows, rows, isSelected, setSelectedRows } = props;
+      let newSelectedRows = [];
+      if (selectedRows.length !== rows.length) {
         rows.forEach(({ id }) => {
           if (!isSelected(id)) {
-            selectedRows.push(id);
+            newSelectedRows.push(id);
           }
         });
       }
+      setSelectedRows(newSelectedRows);
     },
   }),
+);
+
+const PaginationActions = ({ classes }) => (
+  <div className={classes.root}>
+    <IconButton
+      onClick={this.handleFirstPageButtonClick}
+      disabled={page === 0}
+      aria-label="First Page"
+    >
+      {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
+    </IconButton>
+    <IconButton
+      onClick={this.handleBackButtonClick}
+      disabled={page === 0}
+      aria-label="Previous Page"
+    >
+      {theme.direction === 'rtl' ? (
+        <KeyboardArrowRight />
+      ) : (
+        <KeyboardArrowLeft />
+      )}
+    </IconButton>
+    <IconButton
+      onClick={this.handleNextButtonClick}
+      disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+      aria-label="Next Page"
+    >
+      {theme.direction === 'rtl' ? (
+        <KeyboardArrowLeft />
+      ) : (
+        <KeyboardArrowRight />
+      )}
+    </IconButton>
+    <IconButton
+      onClick={this.handleLastPageButtonClick}
+      disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+      aria-label="Last Page"
+    >
+      {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
+    </IconButton>
+  </div>
 );
 
 export const MyTable = ({

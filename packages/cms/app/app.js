@@ -14,11 +14,12 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo';
+import { BrowserRouter } from 'react-router-dom';
 
 import 'sanitize.css/sanitize.css';
-
 // Import Language Provider
 import LanguageProvider from 'containers/LanguageProvider';
+import App from 'containers/App';
 
 // Load the favicon and the .htaccess file
 /* eslint-disable import/no-unresolved, import/extensions */
@@ -26,20 +27,12 @@ import '!file-loader?name=[name].[ext]!./images/favicon.ico';
 import 'file-loader?name=[name].[ext]!./.htaccess';
 /* eslint-enable import/no-unresolved, import/extensions */
 
-import configureStore from './configureStore';
-
 // Import i18n messages
 import { translationMessages } from './i18n';
-
-import Router from './router';
-// import enviroment from './enviroment';
 
 // Import CSS reset and Global Styles
 import './global-styles';
 
-// Create redux store with history
-const initialState = {};
-const store = configureStore(initialState, history);
 const MOUNT_NODE = document.getElementById('app');
 
 const client = new ApolloClient({
@@ -48,13 +41,11 @@ const client = new ApolloClient({
 
 const render = messages => {
   ReactDOM.render(
-    <Provider store={store}>
-      <LanguageProvider messages={messages}>
-        <ApolloProvider client={client}>
-          <Router />
-        </ApolloProvider>
-      </LanguageProvider>
-    </Provider>,
+    <ApolloProvider client={client}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ApolloProvider>,
     MOUNT_NODE,
   );
 };

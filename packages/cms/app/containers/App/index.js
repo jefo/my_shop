@@ -1,5 +1,6 @@
 import React from 'react';
 import { compose, lifesycle } from 'recompose';
+import { Switch, Route } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import teal from '@material-ui/core/colors/teal';
 import red from '@material-ui/core/colors/red';
@@ -7,20 +8,6 @@ import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import ProductsPage from 'containers/Products';
 import ModelEditor from 'containers/ModelEditor';
 import Layout from 'components/Layout';
-
-// in near future routes will load from server
-const routes = [
-  {
-    path: '/admin/products',
-    component: ProductsPage,
-    text: 'Товары', // todo: i8n
-  },
-  {
-    path: '/admin/forms',
-    component: ModelEditor,
-    text: 'Редактор форм',
-  },
-];
 
 const theme = createMuiTheme({
   palette: {
@@ -49,8 +36,25 @@ const theme = createMuiTheme({
   },
 });
 
-export default ({ children }) => (
-  <MuiThemeProvider theme={theme}>
-    <Layout navItems={[]}>{children}</Layout>
-  </MuiThemeProvider>
-);
+const routes = [
+  {
+    path: '/products',
+    component: ProductsPage,
+  },
+];
+
+function App() {
+  return (
+    <MuiThemeProvider theme={theme}>
+      <Layout navItems={routes}>
+        <Switch>
+          {routes.map(r => (
+            <Route key={r.path} path={r.path} component={r.component} />
+          ))}
+        </Switch>
+      </Layout>
+    </MuiThemeProvider>
+  );
+}
+
+export default App;

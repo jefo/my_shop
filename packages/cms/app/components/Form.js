@@ -1,45 +1,60 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, withState, withHandlers } from 'recompose';
+import createReactClass from 'create-react-class';
+import {
+  compose,
+  withState,
+  withHandlers,
+  renderComponent,
+  mapProps,
+  toClass,
+} from 'recompose';
 import { isFunction, merge } from 'lodash';
 
-export const withForm = () => BaseComponent => props =>
-  compose(
-    withState('values', 'setValues', {
-      [props.name]: {},
-    }),
-    withHandlers({
-      handleChange: ({ setValues, values, onChange }) => e => {
-        e.preventDefault();
-        const { name, value } = e.currentTarget;
-        console.log(`changed ${props.name}.${name}`, values[props.name][name]);
-        setValues(
-          merge({}, values, {
-            [props.name]: {
-              [name]: value,
-            },
-          }),
-        );
-        if (isFunction(onChange)) {
-          onChange({ [name]: value });
-        }
-      },
-      handleSubmit: ({ values, onSubmit }) => e => {
-        e.preventDefault();
-        if (onSubmit) {
-          onSubmit(values[props.name]);
-        }
-      },
-    }),
-  )(BaseComponent);
-
-const enhance = compose(withForm());
+const enhance = compose(
+  withState('values', 'setValues', {}),
+  withHandlers({
+    handleChange: props => e => {
+      e.preventDefault();
+      const { setValues, values, onChange } = props;
+      const { name, value } = e.currentTarget;
+      console.log(`changed "${name}"`, values[name]);
+      setValues(
+        merge({}, values, {
+          [name]: value,
+        }),
+      );
+      if (isFunction(onChange)) {
+        onChange({ [name]: value });
+      }
+    },
+    handleSubmit: ({ values, onSubmit }) => e => {
+      e.preventDefault();
+      if (onSubmit) {
+        onSubmit(values);
+      }
+    },
+    handleReset: ({ setValues, onReset, history }) => e => {
+      setValues({});
+      if (onReset) {
+        onReset(e, history);
+      }
+    },
+  }),
+);
 
 const Form = (
-  { handleSubmit, handleChange, children }, // eslint-disable-line
+  { handleSubmit, handleChange, handleReset, children }, // eslint-disable-line
 ) => (
-  <form onSubmit={handleSubmit} noValidate autoComplete="off">
-    {props => children({ ...props, onChange: handleChange })}
+  <form
+    onSubmit={handleSubmit}
+    onReset={handleReset}
+    noValidate
+    autoComplete="off"
+  >
+    {React.Children.map(children, child =>
+      React.cloneElement(child, { onChange: handleChange }),
+    )}
   </form>
 );
 
