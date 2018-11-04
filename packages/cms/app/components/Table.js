@@ -13,7 +13,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 // import TableFooter from '@material-ui/core/TableFooter';
-// import TablePagination from '@material-ui/core/TablePagination';
+import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
 // import IconButton from '@material-ui/core/IconButton';
@@ -67,47 +67,6 @@ const enhance = compose(
   }),
 );
 
-const PaginationActions = ({ classes }) => (
-  <div className={classes.root}>
-    <IconButton
-      onClick={this.handleFirstPageButtonClick}
-      disabled={page === 0}
-      aria-label="First Page"
-    >
-      {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
-    </IconButton>
-    <IconButton
-      onClick={this.handleBackButtonClick}
-      disabled={page === 0}
-      aria-label="Previous Page"
-    >
-      {theme.direction === 'rtl' ? (
-        <KeyboardArrowRight />
-      ) : (
-        <KeyboardArrowLeft />
-      )}
-    </IconButton>
-    <IconButton
-      onClick={this.handleNextButtonClick}
-      disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-      aria-label="Next Page"
-    >
-      {theme.direction === 'rtl' ? (
-        <KeyboardArrowLeft />
-      ) : (
-        <KeyboardArrowRight />
-      )}
-    </IconButton>
-    <IconButton
-      onClick={this.handleLastPageButtonClick}
-      disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-      aria-label="Last Page"
-    >
-      {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
-    </IconButton>
-  </div>
-);
-
 export const MyTable = ({
   classes,
   rows,
@@ -119,54 +78,68 @@ export const MyTable = ({
   toggleSelectAll,
   isSelected,
 }) => (
-  <div className={classes.tableWrapper}>
-    <Table className={classes.table}>
-      <TableHead>
-        <TableRow>
-          <TableCell padding="checkbox">
-            <Checkbox
-              indeterminate={numSelected > 0 && numSelected < rows.length}
-              checked={numSelected === rows.length}
-              onChange={toggleSelectAll}
-            />
-          </TableCell>
-          <TableCell>ID</TableCell>
-          <TableCell>Наименование</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {rows
-          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-          .map(row => {
-            const selected = isSelected(row.id);
-            return (
-              <TableRow
-                key={row.id}
-                hover
-                onClick={event => toggleSelect(event, row.id)}
-                role="checkbox"
-                aria-checked={selected}
-                tabIndex={-1}
-                selected={selected}
-              >
-                <TableCell padding="checkbox">
-                  <Checkbox checked={selected} />
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  {row.id}
-                </TableCell>
-                <TableCell>{row.title}</TableCell>
-              </TableRow>
-            );
-          })}
-        {emptyRows > 0 && (
-          <TableRow style={{ height: 48 * emptyRows }}>
-            <TableCell colSpan={2} />
+  <React.Fragment>
+    <div className={classes.tableWrapper}>
+      <Table className={classes.table}>
+        <TableHead>
+          <TableRow>
+            <TableCell padding="checkbox">
+              <Checkbox
+                indeterminate={numSelected > 0 && numSelected < rows.length}
+                checked={numSelected === rows.length}
+                onChange={toggleSelectAll}
+              />
+            </TableCell>
+            <TableCell>ID</TableCell>
+            <TableCell>Наименование</TableCell>
           </TableRow>
-        )}
-      </TableBody>
-    </Table>
-  </div>
+        </TableHead>
+        <TableBody>
+          {rows
+            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            .map(row => {
+              const selected = isSelected(row.id);
+              return (
+                <TableRow
+                  key={row.id}
+                  hover
+                  onClick={event => toggleSelect(event, row.id)}
+                  role="checkbox"
+                  aria-checked={selected}
+                  tabIndex={-1}
+                  selected={selected}
+                >
+                  <TableCell padding="checkbox">
+                    <Checkbox checked={selected} />
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {row.id}
+                  </TableCell>
+                  <TableCell>{row.title}</TableCell>
+                </TableRow>
+              );
+            })}
+          {emptyRows > 0 && (
+            <TableRow style={{ height: 48 * emptyRows }}>
+              <TableCell colSpan={2} />
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+    <TablePagination
+      component="div"
+      count={rows.length}
+      rowsPerPage={rowsPerPage}
+      page={page}
+      backIconButtonProps={{
+        'aria-label': 'Previous Page',
+      }}
+      nextIconButtonProps={{
+        'aria-label': 'Next Page',
+      }}
+    />
+  </React.Fragment>
 );
 
 MyTable.propTypes = {

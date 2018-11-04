@@ -17,7 +17,9 @@ import Drawer from '@material-ui/core/Drawer';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import CloseIcon from '@material-ui/icons/Close';
-import Table from 'components/Table';
+import { format, isThisYear } from 'date-fns';
+import ruLocale from 'date-fns/locale/ru';
+import DataTable from 'components/DataTable';
 import SearchField from 'components/SearchField';
 import ProductForm from 'containers/ProductForm';
 
@@ -67,45 +69,63 @@ const enhance = compose(
     },
   })),
   withHandlers('drawerFullscreen', 'setDrawerFullscreen', false),
-  defaultProps({
-    products: [
-      { id: 1, name: 'Изделие 1' },
-      { id: 2, name: 'Изделие 2' },
-      { id: 3, name: 'Изделие 3' },
-    ],
-    productProps: [
-      { name: 'id', label: 'ID', type: 'text' },
-      { name: 'name', label: 'Наименование', type: 'text' },
-    ],
-  }),
   mapProps(props => ({
     ...props,
     drawerOpen: props.location.pathname === '/products/new',
   })),
 );
 
-const ProductsTable = graphql(
-  gql`
-    {
-      allMyProducts {
-        nodes {
-          id
-          title
-          price
-          description
-          createdAt
-          updatedAt
+const ProductsTable = compose(
+  defaultProps({
+    cols: [
+      { name: 'title', content: 'Наименование' },
+      { name: 'price', content: 'Цена' },
+      { name: 'description', content: 'Описание' },
+      { name: 'createdAt', content: 'Создано' },
+      { name: 'updatedAt', content: 'Обновлено' },
+    ],
+    selectable: true,
+  }),
+  graphql(
+    gql`
+      {
+        allMyProducts {
+          nodes {
+            id
+            title
+            price
+            description
+            createdAt
+            updatedAt
+          }
         }
       }
-    }
-  `,
-  {
-    props: props => ({
-      ...props,
-      rows: get(props, 'data.allMyProducts.nodes', []),
-    }),
-  },
-)(Table);
+    `,
+    {
+      props: props => ({
+        ...props,
+        rows: get(props, 'data.allMyProducts.nodes', []).map(p => {
+          const createdAt = new Date(p.createdAt);
+          const updatedAt = new Date(p.updatedAt);
+          const options = { locale: ruLocale };
+          return {
+            ...p,
+            createdAt: format(
+              createdAt,
+              isThisYear(createdAt) ? 'DD MMMM' : 'DD MMMM YYYY',
+              options,
+            ).toLowerCase(),
+            updatedAt: format(
+              updatedAt,
+              isThisYear(updatedAt) ? 'DD MMMM' : 'DD MMMM YYYY',
+              options,
+            ).toLowerCase(),
+          };
+        }),
+      }),
+    },
+  ),
+)(DataTable);
 
 const Products = props => {
   const {
@@ -117,13 +137,6 @@ const Products = props => {
     setDrawerFullscreen,
     history,
   } = props;
-  const rows = [
-    {
-      id: 1,
-      name: 'Товар 1',
-      categories: 'Категория 1, категория 2',
-    },
-  ];
   return (
     <div className={classes.root}>
       <main
@@ -157,24 +170,13 @@ const Products = props => {
           paper: classes.drawerPaper,
         }}
       >
-        <div className={classes.drawerActions}>
-          <IconButton
-            aria-label="Fullscreen"
-            onClick={() => setDrawerFullscreen(!drawerFullscreen)}
-          >
-            {drawerFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
-          </IconButton>
-          <IconButton
-            aria-label="Close"
-            onClick={() => history.replace('/products')}
-          >
-            <CloseIcon />
-          </IconButton>
-        </div>
         <Route
           path="/products/new"
           render={() => (
-            <ProductForm onCancel={() => history.replace('/products')} />
+            <ProductForm
+              history={history}
+              onCancel={() => history.replace('/products')}
+            />
           )}
         />
       </Drawer>
