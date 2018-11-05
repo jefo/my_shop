@@ -1,6 +1,7 @@
 import React from 'react';
-import { compose, branch, withHandlers } from 'recompose';
+import { compose, branch, withHandlers, withState, mapProps } from 'recompose';
 import gql from 'graphql-tag';
+import cn from 'classnames';
 import { graphql } from 'react-apollo';
 import { get } from 'lodash';
 import { withStyles } from '@material-ui/core/styles';
@@ -8,6 +9,7 @@ import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import CloseIcon from '@material-ui/icons/Close';
 import TextField from '@material-ui/core/TextField';
+import Drawer from '@material-ui/core/Drawer';
 import Form from 'components/Form';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -16,6 +18,8 @@ import {
   UPDATE_PRODUCT_MUTATION,
   CREATE_PRODUCT_MUTATION,
 } from '../gql';
+
+const drawerWidth = 650;
 
 const withMutation = mutation =>
   graphql(mutation, {
@@ -32,9 +36,27 @@ const withMutation = mutation =>
 
 const enhance = compose(
   withStyles(theme => ({
+    fullScreen: {
+      width: 'calc(100% - 240px)',
+    },
     button: {
       marginTop: theme.spacing.unit,
       marginRight: theme.spacing.unit,
+    },
+    drawer: {
+      maxWidth: drawerWidth,
+      flexShrink: 0,
+    },
+    drawerPaper: {
+      width: drawerWidth,
+      padding: '12px',
+    },
+    drawerHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: '0 8px',
+      ...theme.mixins.toolbar,
+      justifyContent: 'flex-start',
     },
   })),
   branch(
@@ -42,6 +64,7 @@ const enhance = compose(
     withMutation(UPDATE_PRODUCT_MUTATION),
     withMutation(CREATE_PRODUCT_MUTATION),
   ),
+  withState('fullScreen', 'setFullscreen', false),
   withHandlers({
     onSubmit: ({ mutate }) => myProduct => {
       mutate({
@@ -59,61 +82,86 @@ const enhance = compose(
         },
       });
     },
+    toggleFullscreen: ({ fullScreen, setFullscreen }) => () => {
+      setFullscreen(!fullScreen);
+    },
   }),
+  mapProps(props => ({
+    ...props,
+    drawerOpen: props.location.pathname === '/products/new',
+  })),
 );
 
-function ProductForm({ classes, onSubmit, history, product = {} }) {
+function ProductForm({
+  classes,
+  onSubmit,
+  history,
+  fullScreen,
+  toggleFullscreen,
+  drawerOpen,
+  product = {},
+}) {
   return (
-    <Form onSubmit={onSubmit}>
-      <div>
-        <IconButton aria-label="Fullscreen">
-          <FullscreenIcon />
-        </IconButton>
-        <IconButton
-          aria-label="Close"
-          onClick={() => history.replace('/products')}
-        >
-          <CloseIcon />
-        </IconButton>
-        <Button
-          type="submit"
-          className={classes.button}
-          variant="contained"
-          color="primary"
-        >
-          Сохранить
-        </Button>
-      </div>
-      <TextField
-        variant="outlined"
-        label="Наименование"
-        margin="normal"
-        name="title"
-        type="text"
-        value={product.title}
-        autoFocus
-        fullWidth
-      />
-      <TextField
-        variant="outlined"
-        label="Цена"
-        margin="normal"
-        name="price"
-        type="number"
-        value={product.price}
-        fullWidth
-      />
-      <TextField
-        variant="outlined"
-        label="Описание"
-        margin="normal"
-        name="description"
-        fullWidth
-        multiline
-        type="text"
-        value={product.description}
-      />
-    </Form>
+    <Drawer
+      className={classes.drawer}
+      variant="persistent"
+      anchor="right"
+      open={drawerOpen}
+      classes={{
+        paper: classes.drawerPaper,
+      }}
+    >
+      <Form onSubmit={onSubmit}>
+        <div>
+          <IconButton aria-label="Fullscreen" onClick={toggleFullscreen}>
+            {fullScreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+          </IconButton>
+          <IconButton
+            aria-label="Close"
+            onClick={() => history.replace('/products')}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Button
+            type="submit"
+            className={classes.button}
+            variant="contained"
+            color="primary"
+          >
+            Сохранить
+          </Button>
+        </div>
+        <TextField
+          variant="outlined"
+          label="Наименование"
+          margin="normal"
+          name="title"
+          type="text"
+          value={product.title}
+          autoFocus
+          fullWidth
+        />
+        <TextField
+          variant="outlined"
+          label="Цена"
+          margin="normal"
+          name="price"
+          type="number"
+          value={product.price}
+          fullWidth
+        />
+        <TextField
+          variant="outlined"
+          label="Описание"
+          margin="normal"
+          name="description"
+          fullWidth
+          multiline
+          type="text"
+          value={product.description}
+        />
+      </Form>
+    </Drawer>
   );
 }
 

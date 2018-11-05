@@ -37,6 +37,7 @@ const enhance = compose(
   }),
   mapProps(props => ({ ...props, numSelected: props.selectedRows.length })),
   withState('page', 'setPage', 0),
+  withState('rowsPerPage', 'setRowsPerPage', 25),
   withState('selectedRows', 'setSelectedRows', []),
   withHandlers({
     isSelected: ({ selectedRows }) => id => selectedRows.includes(id),
@@ -66,6 +67,12 @@ const enhance = compose(
       }
       setSelectedRows(newSelectedRows);
     },
+    handlePageChange: ({ setPage }) => (e, page) => {
+      setPage(page);
+    },
+    handleRowsPerPageChange: ({ setRowsPerPage }) => e => {
+      setRowsPerPage(e.target.value);
+    },
   }),
 );
 
@@ -81,6 +88,8 @@ function DataTable({
   toggleSelectAll,
   isSelected,
   selectable,
+  handlePageChange,
+  handleRowsPerPageChange,
 }) {
   return (
     <div className={classes.root}>
@@ -137,6 +146,8 @@ function DataTable({
         count={rows.length}
         rowsPerPage={rowsPerPage}
         page={page}
+        onChangeRowsPerPage={handleRowsPerPageChange}
+        onChangePage={handlePageChange}
         backIconButtonProps={{
           'aria-label': 'Previous Page',
         }}

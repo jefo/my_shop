@@ -52,27 +52,8 @@ const enhance = compose(
       }),
       marginRight: drawerWidth,
     },
-    drawer: {
-      maxWidth: drawerWidth,
-      flexShrink: 0,
-    },
-    drawerPaper: {
-      width: drawerWidth,
-      padding: '12px',
-    },
-    drawerHeader: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: '0 8px',
-      ...theme.mixins.toolbar,
-      justifyContent: 'flex-start',
-    },
   })),
   withHandlers('drawerFullscreen', 'setDrawerFullscreen', false),
-  mapProps(props => ({
-    ...props,
-    drawerOpen: props.location.pathname === '/products/new',
-  })),
 );
 
 const ProductsTable = compose(
@@ -136,6 +117,7 @@ const Products = props => {
     drawerFullscreen,
     setDrawerFullscreen,
     history,
+    location,
   } = props;
   return (
     <div className={classes.root}>
@@ -161,31 +143,18 @@ const Products = props => {
         <SearchField />
         <ProductsTable rowsPerPage={25} />
       </main>
-      <Drawer
-        className={classes.drawer}
-        variant="persistent"
-        anchor="right"
-        open={drawerOpen}
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
-        <Route
-          path="/products/new"
-          render={() => (
-            <ProductForm
-              history={history}
-              onCancel={() => history.replace('/products')}
-            />
-          )}
-        />
-      </Drawer>
+      <Route
+        path="/products/new"
+        render={() => (
+          <ProductForm
+            history={history}
+            location={location}
+            onCancel={() => history.replace('/products')}
+          />
+        )}
+      />
     </div>
   );
-};
-
-Products.propTypes = {
-  productProps: PropTypes.array.isRequired,
 };
 
 export default enhance(Products);

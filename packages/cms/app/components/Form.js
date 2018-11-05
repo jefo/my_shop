@@ -44,9 +44,10 @@ const enhance = compose(
 );
 
 const Form = (
-  { handleSubmit, handleChange, handleReset, children }, // eslint-disable-line
+  { className, handleSubmit, handleChange, handleReset, children }, // eslint-disable-line
 ) => (
   <form
+    className={className}
     onSubmit={handleSubmit}
     onReset={handleReset}
     noValidate
